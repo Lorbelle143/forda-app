@@ -3,6 +3,12 @@ require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/db.php';
 requireAdmin();
 
+$levelMap = [
+    'beginner'     => 'Week 1 — Easy',
+    'intermediate' => 'Week 2 — Medium',
+    'advanced'     => 'Week 3 — Hard',
+];
+
 // Handle delete recording
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delete') {
     verifyCsrf();
@@ -42,6 +48,7 @@ $where  = ($filter === 'pending') ? 'WHERE r.feedback IS NULL' : '';
 
 $recordings = $pdo->query("
     SELECT r.*, u.name AS student_name, m.title AS material_title, m.level,
+           m.session_number, m.reading_number,
            fb.name AS feedback_by_name
     FROM recordings r
     JOIN users u ON r.student_id = u.id
@@ -65,7 +72,7 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="page-header-inner">
       <div>
         <h1 class="page-title">&#127908; Student Recordings</h1>
-        <p class="page-subtitle"><?= count($recordings) ?> recording(s) <?= $filter === 'pending' ? 'pending feedback' : 'total' ?></p>
+        <p class="page-subtitle"><?= count($recordings) ?> recording(s) <?= $filter === 'pending' ? 'pending facilitator feedback' : 'total' ?></p>
       </div>
     </div>
   </div>
@@ -95,8 +102,23 @@ require_once __DIR__ . '/../includes/header.php';
           <?= e($rec['material_title']) ?>
         </div>
         <div class="recording-item-meta">
-          <span class="badge badge-<?= e($rec['level']) ?>"><?= e(ucfirst($rec['level'])) ?></span>
+          <span class="badge badge-<?= e($rec['level']) ?>"><?= e($levelMap[$rec['level']] ?? ucfirst($rec['level'])) ?></span>
           &nbsp; Submitted: <?= e(date('M j, Y g:i A', strtotime($rec['submitted_at']))) ?>
+          <?php if (!is_null($rec['mispronounced_count'])): ?>
+            &nbsp;
+            <?php
+            $msColors = ['Excellent'=>'#065F46','Great Progress'=>'#1E40AF','Nice Job'=>'#92400E','Brave Start'=>'#7B1450'];
+            $msBgs    = ['Excellent'=>'#ECFDF5','Great Progress'=>'#EFF6FF','Nice Job'=>'#FFFBEB','Brave Start'=>'#FDF4FF'];
+            $msIcons  = ['Excellent'=>'🌟','Great Progress'=>'👏','Nice Job'=>'💪','Brave Start'=>'🌱'];
+            $mc = $rec['milestone'] ?? '';
+            $mcColor = $msColors[$mc] ?? '#64748B';
+            $mcBg    = $msBgs[$mc]   ?? '#F8FAFC';
+            $mcIcon  = $msIcons[$mc] ?? '📊';
+            ?>
+            <span style="display:inline-flex;align-items:center;gap:.3rem;font-size:.75rem;font-weight:700;color:<?= $mcColor ?>;background:<?= $mcBg ?>;border-radius:999px;padding:.2rem .65rem;">
+              <?= $mcIcon ?> <?= e($mc) ?> · <?= $rec['mispronounced_count'] ?> errors
+            </span>
+          <?php endif; ?>
         </div>
       </div>
       <div>
@@ -153,15 +175,70 @@ require_once __DIR__ . '/../includes/header.php';
       <input type="hidden" name="action" value="feedback">
       <input type="hidden" name="recording_id" value="<?= $rec['id'] ?>">
       <label class="form-label">&#128172; Give Feedback</label>
-      <textarea name="feedback" class="form-control" rows="3" required
-        placeholder="Write your feedback for this student..."></textarea>
+
+      <!-- AIM Pronunciation Rubric -->
+      <details style="margin-bottom:1rem;">
+        <summary class="btn btn-sm btn-ghost" style="cursor:pointer;display:inline-flex;margin-bottom:.5rem;">&#128203; View AIM Pronunciation Rubric</summary>
+        <div style="overflow-x:auto;margin-top:.75rem;">
+          <table class="rubric-table">
+            <thead>
+              <tr>
+                <th>Criteria</th>
+                <th>5 — Excellent</th>
+                <th>4 — Good</th>
+                <th>3 — Satisfactory</th>
+                <th>2 — Needs Improvement</th>
+                <th>1 — Poor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Segmental Accuracy<br><small>(Vowels &amp; Consonants)</small></td>
+                <td class="rubric-score-5">Almost all sounds correctly produced; no noticeable errors</td>
+                <td class="rubric-score-4">Minor errors that do not affect understanding</td>
+                <td class="rubric-score-3">Some noticeable errors but meaning is still clear</td>
+                <td class="rubric-score-2">Frequent errors that sometimes affect clarity</td>
+                <td class="rubric-score-1">Consistent errors that make speech difficult to understand</td>
+              </tr>
+              <tr>
+                <td>Word Stress</td>
+                <td class="rubric-score-5">Correct stress on nearly all multisyllabic words</td>
+                <td class="rubric-score-4">Most words have correct stress with few errors</td>
+                <td class="rubric-score-3">Some correct stress but inconsistent</td>
+                <td class="rubric-score-2">Limited control of word stress</td>
+                <td class="rubric-score-1">Incorrect stress on most words</td>
+              </tr>
+              <tr>
+                <td>Sentence Stress &amp; Intonation</td>
+                <td class="rubric-score-5">Natural and appropriate stress and intonation throughout</td>
+                <td class="rubric-score-4">Generally appropriate with minor inconsistencies</td>
+                <td class="rubric-score-3">Some attempts at correct intonation but uneven</td>
+                <td class="rubric-score-2">Limited control of stress/intonation patterns</td>
+                <td class="rubric-score-1">Monotone or inappropriate intonation throughout</td>
+              </tr>
+              <tr>
+                <td>Pronunciation Clarity</td>
+                <td class="rubric-score-5">Speech is very clear and easily understood</td>
+                <td class="rubric-score-4">Mostly clear with occasional unclear words</td>
+                <td class="rubric-score-3">Generally understandable with some unclear parts</td>
+                <td class="rubric-score-2">Often unclear requiring listener effort</td>
+                <td class="rubric-score-1">Very unclear and difficult to understand</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+
+      <textarea name="feedback" class="form-control" rows="4" required
+        placeholder="Write your feedback based on the AIM rubric (segmental accuracy, word stress, intonation, clarity)..."></textarea>
       <button type="submit" class="btn btn-primary btn-sm">Submit Feedback</button>
     </form>
     <?php endif; ?>
-  </div>
+
+  </div><!-- /.recording-item -->
   <?php endforeach; ?>
 
   <?php endif; ?>
-</div>
+</div><!-- /.container -->
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

@@ -7,10 +7,10 @@
 
 <footer class="site-footer">
     <div class="container footer-inner">
-        <p class="footer-brand">&#128218; <strong>ReadEase</strong> — Your Reading Companion</p>
+        <p class="footer-brand">&#127908; <strong>A.I.M.</strong> — Audio-Visual Intervention Mirroring</p>
         <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
             <a href="<?= $base ?>privacy.php" style="color:#64748B;font-size:.82rem;text-decoration:none;">Privacy Policy</a>
-            <p class="footer-copy">&copy; <?= date('Y') ?> ReadEase. Built for better reading.</p>
+            <p class="footer-copy">&copy; <?= date('Y') ?> A.I.M. — A Level-Based Pronunciation Accuracy Program.</p>
         </div>
     </div>
 </footer>

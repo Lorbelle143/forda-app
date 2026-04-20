@@ -13,19 +13,19 @@ $currentDir  = basename(dirname($_SERVER['PHP_SELF']));
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= isset($pageTitle) ? e($pageTitle) . ' — ReadEase' : 'ReadEase' ?></title>
+    <title><?= isset($pageTitle) ? e($pageTitle) . ' — A.I.M.' : 'A.I.M.' ?></title>
     <link rel="stylesheet" href="<?= $base ?>assets/css/style.css">
 
     <!-- PWA -->
     <link rel="manifest" href="<?= $base ?>manifest.json">
-    <meta name="theme-color" content="#4F46E5">
+    <meta name="theme-color" content="#7B1450">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="ReadEase">
+    <meta name="apple-mobile-web-app-title" content="A.I.M.">
     <link rel="apple-touch-icon" href="<?= $base ?>assets/icons/icon-192.png">
     <link rel="icon" type="image/png" sizes="192x192" href="<?= $base ?>assets/icons/icon-192.png">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎙️</text></svg>">
 </head>
 <body>
 
@@ -39,8 +39,11 @@ $currentDir  = basename(dirname($_SERVER['PHP_SELF']));
     <!-- Sidebar -->
     <aside class="sidebar" id="appSidebar">
         <a href="<?= $base ?><?= isAdmin() ? 'admin/dashboard.php' : 'dashboard.php' ?>" class="sidebar-logo">
-            <span class="sidebar-logo-icon">📖</span>
-            <span class="sidebar-logo-text">ReadEase</span>
+            <span class="sidebar-logo-icon">🎙️</span>
+            <div>
+                <div class="aim-logo-text">A.I.M.</div>
+                <div class="aim-logo-sub">Audio-Visual Intervention Mirroring</div>
+            </div>
         </a>
 
         <nav class="sidebar-nav">
@@ -58,6 +61,10 @@ $currentDir  = basename(dirname($_SERVER['PHP_SELF']));
                 <a href="<?= $base ?>admin/recordings.php"
                    class="sidebar-link <?= ($currentFile === 'recordings.php') ? 'active' : '' ?>">
                     <span class="sidebar-icon">🎤</span> Recordings
+                </a>
+                <a href="<?= $base ?>admin/progress.php"
+                   class="sidebar-link <?= ($currentFile === 'progress.php') ? 'active' : '' ?>">
+                    <span class="sidebar-icon">📊</span> Student Progress
                 </a>
                 <a href="<?= $base ?>admin/users.php"
                    class="sidebar-link <?= ($currentFile === 'users.php') ? 'active' : '' ?>">
@@ -114,7 +121,7 @@ $currentDir  = basename(dirname($_SERVER['PHP_SELF']));
                 <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
                     <span></span><span></span><span></span>
                 </button>
-                <span class="app-topbar-title"><?= isset($pageTitle) ? e($pageTitle) : 'ReadEase' ?></span>
+                <span class="app-topbar-title"><?= isset($pageTitle) ? e($pageTitle) : 'A.I.M.' ?></span>
             </div>
             <div class="app-topbar-right">
                 <?php if ($avatarFile && file_exists($avatarFile)): ?>
@@ -146,8 +153,8 @@ if ($flash):
 <header class="site-header">
     <div class="container header-inner">
         <a href="<?= $base ?>index.php" class="logo">
-            <span class="logo-icon">📖</span>
-            <span class="logo-text">ReadEase</span>
+            <span class="logo-icon">🎙️</span>
+            <span class="logo-text">A.I.M.</span>
         </a>
 
         <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">

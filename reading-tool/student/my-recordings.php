@@ -24,6 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
 
 $stmt = $pdo->prepare('
     SELECT r.*, m.title AS material_title, m.level, m.id AS material_id,
+           m.session_number, m.reading_number,
            u.name AS feedback_by_name
     FROM recordings r
     JOIN reading_materials m ON r.material_id = m.id
@@ -36,6 +37,12 @@ $recordings = $stmt->fetchAll();
 
 $pageTitle = 'My Recordings';
 require_once __DIR__ . '/../includes/header.php';
+
+$levelMap = [
+    'beginner'     => 'Week 1 — Easy',
+    'intermediate' => 'Week 2 — Medium',
+    'advanced'     => 'Week 3 — Hard',
+];
 ?>
 
 <div class="container">
@@ -47,8 +54,8 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
     <div class="page-header-inner">
       <div>
-        <h1 class="page-title">&#127908; My Recordings</h1>
-        <p class="page-subtitle"><?= count($recordings) ?> recording(s) submitted</p>
+        <h1 class="page-title">&#127908; My Session Recordings</h1>
+        <p class="page-subtitle"><?= count($recordings) ?> recording(s) submitted across all sessions</p>
       </div>
       <a href="../dashboard.php" class="btn btn-primary btn-sm">+ New Recording</a>
     </div>
@@ -69,7 +76,7 @@ require_once __DIR__ . '/../includes/header.php';
       <div>
         <div class="recording-item-title"><?= e($rec['material_title']) ?></div>
         <div class="recording-item-meta">
-          <span class="badge badge-<?= e($rec['level']) ?>"><?= e(ucfirst($rec['level'])) ?></span>
+          <span class="badge badge-<?= e($rec['level']) ?>"><?= e($levelMap[$rec['level']] ?? ucfirst($rec['level'])) ?></span>
           &nbsp; Submitted: <?= e(date('M j, Y g:i A', strtotime($rec['submitted_at']))) ?>
         </div>
       </div>
@@ -102,6 +109,30 @@ require_once __DIR__ . '/../includes/header.php';
     </audio>
     <?php else: ?>
     <p class="text-muted text-sm" style="margin:.5rem 0;">Audio file not found.</p>
+    <?php endif; ?>
+
+    <?php
+    // ── Accuracy Score ──────────────────────────────────
+    $milestoneStyles = [
+        'Excellent'      => ['bg'=>'#ECFDF5','border'=>'#A7F3D0','color'=>'#065F46','icon'=>'🌟'],
+        'Great Progress' => ['bg'=>'#EFF6FF','border'=>'#BFDBFE','color'=>'#1E40AF','icon'=>'👏'],
+        'Nice Job'       => ['bg'=>'#FFFBEB','border'=>'#FDE68A','color'=>'#92400E','icon'=>'💪'],
+        'Brave Start'    => ['bg'=>'#FDF4FF','border'=>'#E9B8D4','color'=>'#7B1450','icon'=>'🌱'],
+    ];
+    if (!is_null($rec['mispronounced_count'])): 
+        $ms = $milestoneStyles[$rec['milestone']] ?? ['bg'=>'#F8FAFC','border'=>'#E2E8F0','color'=>'#64748B','icon'=>'📊'];
+    ?>
+    <div style="background:<?= $ms['bg'] ?>;border:1.5px solid <?= $ms['border'] ?>;border-radius:10px;padding:.85rem 1rem;margin:.5rem 0;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+      <div style="font-size:1.5rem;"><?= $ms['icon'] ?></div>
+      <div style="flex:1;">
+        <div style="font-size:.78rem;font-weight:700;color:<?= $ms['color'] ?>;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.15rem;">🌸 Accuracy Tracker Result</div>
+        <div style="font-size:.95rem;font-weight:800;color:<?= $ms['color'] ?>;"><?= e($rec['milestone']) ?></div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:1.6rem;font-weight:900;color:<?= $ms['color'] ?>;"><?= $rec['mispronounced_count'] ?></div>
+        <div style="font-size:.72rem;color:<?= $ms['color'] ?>;opacity:.8;">mispronounced</div>
+      </div>
+    </div>
     <?php endif; ?>
 
     <?php if ($rec['feedback']): ?>

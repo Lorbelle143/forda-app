@@ -1,0 +1,5 @@
+# Allow audio files only — block PHP execution
+<FilesMatch "\.php$">
+    Deny from all
+</FilesMatch>
+Options -Indexes

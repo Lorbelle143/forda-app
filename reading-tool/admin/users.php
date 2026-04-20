@@ -22,8 +22,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
     verifyCsrf();
     $userId = (int)($_POST['user_id'] ?? 0);
     if ($userId && $userId !== currentUserId()) {
-        $pdo->prepare('DELETE FROM users WHERE id=?')->execute([$userId]);
-        setFlash('success', 'User deleted.');
+        // 1. Null out feedback_by references (this user may have given feedback)
+        $pdo->prepare('UPDATE recordings SET feedback_by = NULL WHERE feedback_by = ?')->execute([$userId]);
+
+        // 2. Delete their uploaded recording audio files
+        $recs = $pdo->prepare('SELECT audio_path FROM recordings WHERE student_id = ?');
+        $recs->execute([$userId]);
+        foreach ($recs->fetchAll() as $rec) {
+            $path = __DIR__ . '/../' . $rec['audio_path'];
+            if (file_exists($path)) unlink($path);
+        }
+
+        // 3. Delete their recordings rows (FK cascade should handle it, but be explicit)
+        $pdo->prepare('DELETE FROM recordings WHERE student_id = ?')->execute([$userId]);
+
+        // 4. Delete the user
+        $pdo->prepare('DELETE FROM users WHERE id = ?')->execute([$userId]);
+
+        setFlash('success', 'User deleted successfully.');
     } else {
         setFlash('error', 'Cannot delete your own account.');
     }

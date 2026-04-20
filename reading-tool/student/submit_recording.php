@@ -76,7 +76,13 @@ if (!move_uploaded_file($file['tmp_name'], $destPath)) {
 }
 
 // Insert into DB
-$stmt = $pdo->prepare('INSERT INTO recordings (student_id, material_id, audio_path) VALUES (?, ?, ?)');
-$stmt->execute([$studentId, $materialId, $dbPath]);
+$misCount  = isset($_POST['mispronounced_count']) ? (int)$_POST['mispronounced_count'] : null;
+$milestone = trim($_POST['milestone'] ?? '') ?: null;
+// Validate milestone value
+$validMilestones = ['Excellent', 'Great Progress', 'Nice Job', 'Brave Start'];
+if ($milestone && !in_array($milestone, $validMilestones)) $milestone = null;
+
+$stmt = $pdo->prepare('INSERT INTO recordings (student_id, material_id, audio_path, mispronounced_count, milestone) VALUES (?, ?, ?, ?, ?)');
+$stmt->execute([$studentId, $materialId, $dbPath, $misCount, $milestone]);
 
 echo json_encode(['success' => true, 'recording_id' => $pdo->lastInsertId()]);

@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS reading_materials (
   title VARCHAR(200) NOT NULL,
   content TEXT NOT NULL,
   level ENUM('beginner','intermediate','advanced') DEFAULT 'beginner',
+  session_number TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '1-6 (AIM sessions)',
+  reading_number TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT 'Reading 1,2,3... within a session',
   created_by INT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
