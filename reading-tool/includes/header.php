@@ -77,14 +77,31 @@ $currentDir  = basename(dirname($_SERVER['PHP_SELF']));
 
         <div class="sidebar-bottom">
             <div class="sidebar-user">
+                <?php
+                $avatarPath = $_SESSION['avatar'] ?? null;
+                // Refresh from DB if not in session
+                if (!$avatarPath) {
+                    $avatarStmt = $pdo->prepare('SELECT avatar FROM users WHERE id = ?');
+                    $avatarStmt->execute([currentUserId()]);
+                    $avatarPath = $avatarStmt->fetchColumn();
+                    if ($avatarPath) $_SESSION['avatar'] = $avatarPath;
+                }
+                $avatarFile = $avatarPath ? __DIR__ . '/' . $avatarPath : null;
+                ?>
+                <?php if ($avatarFile && file_exists($avatarFile)): ?>
+                <img src="<?= $base . e($avatarPath) ?>?v=<?= filemtime($avatarFile) ?>"
+                     alt="avatar"
+                     style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;">
+                <?php else: ?>
                 <div class="sidebar-user-avatar"><?= strtoupper(substr(currentUserName(), 0, 1)) ?></div>
+                <?php endif; ?>
                 <div>
                     <div class="sidebar-user-name"><?= e(currentUserName()) ?></div>
                     <div class="sidebar-user-role"><?= isAdmin() ? 'Admin' : 'Student' ?></div>
                 </div>
             </div>
             <div class="sidebar-actions">
-                <a href="<?= $base ?>profile.php" class="btn-profile">👤 Profile</a>
+                <a href="<?= $base ?>profile.php" class="btn-profile">&#128100; Profile</a>
                 <a href="<?= $base ?>logout.php" class="btn-logout">Logout</a>
             </div>
         </div>
@@ -100,7 +117,13 @@ $currentDir  = basename(dirname($_SERVER['PHP_SELF']));
                 <span class="app-topbar-title"><?= isset($pageTitle) ? e($pageTitle) : 'ReadEase' ?></span>
             </div>
             <div class="app-topbar-right">
+                <?php if ($avatarFile && file_exists($avatarFile)): ?>
+                <img src="<?= $base . e($avatarPath) ?>?v=<?= filemtime($avatarFile) ?>"
+                     alt="avatar"
+                     style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
+                <?php else: ?>
                 <div class="user-avatar"><?= strtoupper(substr(currentUserName(), 0, 1)) ?></div>
+                <?php endif; ?>
             </div>
         </div>
 

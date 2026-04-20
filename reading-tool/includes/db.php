@@ -59,6 +59,13 @@ try {
         )
     ");
 
+    // Add avatar column if it doesn't exist yet
+    try {
+        $pdo->exec("ALTER TABLE users ADD COLUMN avatar VARCHAR(255) DEFAULT NULL");
+    } catch (PDOException $e) {
+        // Column already exists — ignore
+    }
+
     // Admin accounts with correct password: admin123
     $admins = [
         ['Lorbelle Ganzan', 'lorbelleganzan@gmail.com', 'admin123', 'admin'],

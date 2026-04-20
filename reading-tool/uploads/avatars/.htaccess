@@ -1,0 +1,5 @@
+# Block PHP execution in avatar uploads
+<FilesMatch "\.php$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>

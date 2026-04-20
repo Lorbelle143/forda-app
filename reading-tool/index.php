@@ -25,7 +25,10 @@ require_once __DIR__ . '/includes/header.php';
 
     <div class="hero-actions">
       <a href="login.php" class="btn btn-hero-primary btn-lg">Get Started Free</a>
-      <a href="#features" class="btn btn-hero-outline btn-lg">See How It Works</a>
+      <button id="pwaInstallBtn" class="btn btn-hero-outline btn-lg" style="display:none;">
+        &#11015; Install App
+      </button>
+      <a href="#features" class="btn btn-hero-outline btn-lg" id="learnMoreBtn">See How It Works</a>
     </div>
 
     <div class="hero-stats">
@@ -164,3 +167,35 @@ require_once __DIR__ . '/includes/header.php';
 </section>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
+
+<script>
+// PWA Install prompt
+var pwaInstallEvent = null;
+var installBtn = document.getElementById('pwaInstallBtn');
+
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  pwaInstallEvent = e;
+  if (installBtn) {
+    installBtn.style.display = 'inline-flex';
+  }
+});
+
+if (installBtn) {
+  installBtn.addEventListener('click', function() {
+    if (!pwaInstallEvent) return;
+    pwaInstallEvent.prompt();
+    pwaInstallEvent.userChoice.then(function(result) {
+      if (result.outcome === 'accepted') {
+        installBtn.style.display = 'none';
+      }
+      pwaInstallEvent = null;
+    });
+  });
+}
+
+// If already installed, hide the button
+window.addEventListener('appinstalled', function() {
+  if (installBtn) installBtn.style.display = 'none';
+});
+</script>

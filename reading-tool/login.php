@@ -165,8 +165,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div style="text-align:center; margin-top:1rem;">
       <a href="index.php" style="font-size:.82rem; color:#94A3B8; text-decoration:none;">&#8592; Back to Home</a>
+      &nbsp;&nbsp;
+      <button id="pwaInstallBtn" style="display:none;background:none;border:none;font-size:.82rem;color:#94A3B8;cursor:pointer;">&#11015; Install App</button>
     </div>
   </div>
 </div>
+
+<script>
+var pwaInstallEvent = null;
+var installBtn = document.getElementById('pwaInstallBtn');
+
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  pwaInstallEvent = e;
+  if (installBtn) installBtn.style.display = 'inline';
+});
+
+if (installBtn) {
+  installBtn.addEventListener('click', function() {
+    if (!pwaInstallEvent) return;
+    pwaInstallEvent.prompt();
+    pwaInstallEvent.userChoice.then(function() {
+      pwaInstallEvent = null;
+      installBtn.style.display = 'none';
+    });
+  });
+}
+
+window.addEventListener('appinstalled', function() {
+  if (installBtn) installBtn.style.display = 'none';
+});
+</script>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#4F46E5">
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
+}
+</script>
 </body>
 </html>
