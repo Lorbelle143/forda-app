@@ -370,6 +370,9 @@ require_once __DIR__ . '/includes/header.php';
     <div class="aim-hero-actions">
       <a href="login.php" class="btn-aim-primary">🎙️ Get Started</a>
       <a href="register.php" class="btn-aim-outline">Create Account</a>
+      <button id="pwaInstallBtn" class="btn-aim-outline" style="display:none;">
+        ⬇️ Install App
+      </button>
     </div>
 
     <div class="aim-hero-stats">
@@ -516,3 +519,29 @@ require_once __DIR__ . '/includes/header.php';
 </section>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
+
+<script>
+var pwaInstallEvent = null;
+var installBtn = document.getElementById('pwaInstallBtn');
+
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  pwaInstallEvent = e;
+  if (installBtn) installBtn.style.display = 'inline-flex';
+});
+
+if (installBtn) {
+  installBtn.addEventListener('click', function() {
+    if (!pwaInstallEvent) return;
+    pwaInstallEvent.prompt();
+    pwaInstallEvent.userChoice.then(function() {
+      pwaInstallEvent = null;
+      installBtn.style.display = 'none';
+    });
+  });
+}
+
+window.addEventListener('appinstalled', function() {
+  if (installBtn) installBtn.style.display = 'none';
+});
+</script>

@@ -1,13 +1,13 @@
 {
-  "name": "ReadEase",
-  "short_name": "ReadEase",
-  "description": "Your Reading Companion — text-to-speech, voice recording, and teacher feedback.",
+  "name": "A.I.M. — Audio-Visual Intervention Mirroring",
+  "short_name": "A.I.M.",
+  "description": "A Level-Based Pronunciation Accuracy Program for Pre-Service Teachers",
   "start_url": "./index.php",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0F172A",
-  "theme_color": "#4F46E5",
+  "background_color": "#1A0A12",
+  "theme_color": "#7B1450",
   "icons": [
     {
       "src": "assets/icons/icon-192.png",
