@@ -2,13 +2,19 @@
   "name": "A.I.M. — Audio-Visual Intervention Mirroring",
   "short_name": "A.I.M.",
   "description": "A Level-Based Pronunciation Accuracy Program for Pre-Service Teachers",
-  "start_url": "./index.php",
-  "scope": "./",
+  "start_url": "/forda_app/reading-tool/index.php",
+  "scope": "/forda_app/reading-tool/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#1A0A12",
   "theme_color": "#7B1450",
   "icons": [
+    {
+      "src": "assets/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
     {
       "src": "assets/icons/icon-192.png",
       "sizes": "192x192",

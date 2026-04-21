@@ -13,6 +13,7 @@ $currentDir  = basename(dirname($_SERVER['PHP_SELF']));
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="m3ra5A3mTYOxqvGhXwgk-fZ49OgNuTfLq8MhEvOJ7iw" />
     <title><?= isset($pageTitle) ? e($pageTitle) . ' — A.I.M.' : 'A.I.M.' ?></title>
     <link rel="stylesheet" href="<?= $base ?>assets/css/style.css">
 
@@ -163,10 +164,37 @@ if ($flash):
 
         <nav class="main-nav" id="mainNav">
             <a href="<?= $base ?>index.php" class="nav-link <?= ($currentFile === 'index.php') ? 'active' : '' ?>">Home</a>
+            <button id="pwaInstallNavBtn" onclick="triggerPWAInstall()" style="background:linear-gradient(135deg,#7B1450,#A855A0);color:#fff;border:none;border-radius:8px;padding:.4rem .85rem;font-size:.82rem;font-weight:700;cursor:pointer;">⬇️ Install App</button>
             <a href="<?= $base ?>login.php" class="btn btn-sm btn-primary">Login</a>
         </nav>
     </div>
 </header>
+
+<script>
+var _pwaEvt = null;
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  _pwaEvt = e;
+  var btn = document.getElementById('pwaInstallNavBtn');
+  if (btn) btn.style.display = 'inline-block';
+  var heroBtn = document.getElementById('pwaInstallBtn');
+  if (heroBtn) heroBtn.style.display = 'inline-flex';
+});
+function triggerPWAInstall() {
+  if (_pwaEvt) {
+    _pwaEvt.prompt();
+    _pwaEvt.userChoice.then(function() { _pwaEvt = null; });
+  } else {
+    // Show step-by-step modal instead of alert
+    document.getElementById('installModal').style.display = 'flex';
+  }
+}
+window.addEventListener('appinstalled', function() {
+  var btn = document.getElementById('pwaInstallNavBtn');
+  if (btn) btn.style.display = 'none';
+  document.getElementById('installModal').style.display = 'none';
+});
+</script>
 
 <main class="main-content">
 <?php

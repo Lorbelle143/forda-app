@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#1A0A12"/>
+  <circle cx="256" cy="256" r="220" fill="#7B1450"/>
+  <circle cx="256" cy="256" r="170" fill="#A855A0"/>
+  <rect x="218" y="155" width="76" height="130" rx="38" fill="white"/>
+  <path d="M160 256 Q160 346 256 346 Q352 346 352 256" stroke="white" stroke-width="16" fill="none" stroke-linecap="round"/>
+  <line x1="256" y1="346" x2="256" y2="400" stroke="white" stroke-width="16" stroke-linecap="round"/>
+  <line x1="200" y1="400" x2="312" y2="400" stroke="white" stroke-width="16" stroke-linecap="round"/>
+  <text x="256" y="470" text-anchor="middle" fill="#F0A0D8" font-size="40" font-weight="900" font-family="Arial">A.I.M.</text>
+</svg>
